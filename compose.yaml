@@ -1,0 +1,6 @@
+﻿services:
+  budgetmanager.service:
+    image: budgetmanager.service
+    build:
+      context: .
+      dockerfile: BudgetManager.Service.Api/Dockerfile

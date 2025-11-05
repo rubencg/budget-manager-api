@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManager.Service.Api", "BudgetManager.Service.Api\BudgetManager.Service.Api.csproj", "{AF89E85A-C2C8-431D-B97B-E38DC1283E08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BAC112BF-1932-4FA3-A811-F84966FCC307}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManager.Api.Domain", "BudgetManager.Api.Domain\BudgetManager.Api.Domain.csproj", "{3C29DCD7-4ED7-4F1A-ADE7-9E6932039F83}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF89E85A-C2C8-431D-B97B-E38DC1283E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF89E85A-C2C8-431D-B97B-E38DC1283E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF89E85A-C2C8-431D-B97B-E38DC1283E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF89E85A-C2C8-431D-B97B-E38DC1283E08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C29DCD7-4ED7-4F1A-ADE7-9E6932039F83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C29DCD7-4ED7-4F1A-ADE7-9E6932039F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C29DCD7-4ED7-4F1A-ADE7-9E6932039F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C29DCD7-4ED7-4F1A-ADE7-9E6932039F83}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
