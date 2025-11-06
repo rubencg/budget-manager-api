@@ -1,4 +1,5 @@
 ﻿using BudgetManager.Api.Domain.Entities;
+using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Transactions.Queries;
@@ -6,28 +7,29 @@ namespace BudgetManager.Service.Features.Transactions.Queries;
 public class GetTransactionsByMonthQueryHandler
     : IRequestHandler<GetTransactionsByMonthQuery, GetTransactionsByMonthQueryResult>
 {
+    private readonly ITransactionRepository _transactionRepository;
+
+    public GetTransactionsByMonthQueryHandler(ITransactionRepository transactionRepository)
+    {
+        _transactionRepository = transactionRepository;
+    }
+    
     public async Task<GetTransactionsByMonthQueryResult> Handle(
         GetTransactionsByMonthQuery request,
         CancellationToken cancellationToken)
     {
         var yearMonth = $"{request.Year}-{request.Month:D2}";
+        var userId = "auth0|507f1f77bcf86cd799439011";
+
+        var transactions = await _transactionRepository.GetByMonthAsync(userId, yearMonth
+            , cancellationToken: cancellationToken);
         
         return new GetTransactionsByMonthQueryResult(
             yearMonth,
             1,
             500,
             1000,
-            new List<Transaction>()
-            {
-                new()
-                {
-                    AccountName = "Ruben Debito",
-                    Month = 10,
-                    Year = 2025,
-                    Day = 27,
-                    Amount = 500
-                }
-            }
+            transactions
         );
     }
 }
