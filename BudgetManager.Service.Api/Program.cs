@@ -27,7 +27,11 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        // Only use HTTPS redirection in Development when running locally
+        if (app.Environment.IsDevelopment() && !Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.UseAuthorization();
 
