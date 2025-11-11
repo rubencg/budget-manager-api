@@ -19,7 +19,7 @@ public class GetTransactionsByMonthQueryHandler
         CancellationToken cancellationToken)
     {
         var yearMonth = $"{request.Year}-{request.Month:D2}";
-        var userId = "auth0|507f1f77bcf86cd799439011";
+        var userId = request.AccountId;
 
         var transactions = await _transactionRepository.GetByMonthAsync(userId, yearMonth
             , cancellationToken: cancellationToken);
