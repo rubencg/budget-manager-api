@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace BudgetManager.Api.Domain.Entities;
 
-public class Transaction
+public class Transaction : ICosmosEntity
 {
     [JsonProperty("id")]
     public string Id { get; set; } = null!;
