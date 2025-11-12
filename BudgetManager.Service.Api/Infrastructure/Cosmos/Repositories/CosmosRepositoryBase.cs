@@ -125,7 +125,8 @@ public abstract class CosmosRepositoryBase<TEntity> where TEntity : ICosmosEntit
             "Created {EntityName} {EntityId} - RU charge: {RequestCharge}",
             EntityName, entity.Id, response.RequestCharge);
 
-        return response.Resource;
+        // Return the entity we just created (response.Resource is null due to EnableContentResponseOnWrite = false)
+        return entity;
     }
 
     /// <summary>
@@ -147,7 +148,8 @@ public abstract class CosmosRepositoryBase<TEntity> where TEntity : ICosmosEntit
             "Updated {EntityName} {EntityId} - RU charge: {RequestCharge}",
             EntityName, entity.Id, response.RequestCharge);
 
-        return response.Resource;
+        // Return the entity we just updated (response.Resource is null due to EnableContentResponseOnWrite = false)
+        return entity;
     }
 
     /// <summary>

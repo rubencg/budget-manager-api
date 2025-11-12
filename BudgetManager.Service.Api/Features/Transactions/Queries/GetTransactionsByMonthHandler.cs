@@ -1,5 +1,4 @@
-﻿using BudgetManager.Api.Domain.Entities;
-using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
+﻿using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Transactions.Queries;
