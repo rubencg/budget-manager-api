@@ -38,7 +38,18 @@ public class Program
                     return new HttpClient(httpMessageHandler);
                 },
                 ConnectionMode = ConnectionMode.Gateway,
-                LimitToEndpoint = true
+                LimitToEndpoint = true,
+
+                // Retry policy configuration for transient errors
+                MaxRetryAttemptsOnRateLimitedRequests = 5,
+                MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(30),
+
+                // Performance optimizations
+                EnableContentResponseOnWrite = false, // Reduces RU on write operations
+                RequestTimeout = TimeSpan.FromSeconds(30),
+
+                // Consistency level (Session is default, but explicit is better)
+                ConsistencyLevel = ConsistencyLevel.Session
             };
 
             return new CosmosClient(settings.ConnectionString, cosmosClientOptions);
@@ -46,6 +57,7 @@ public class Program
 
         // Register repositories
         builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+        builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
         builder.Services.AddMediatrServices();
 
