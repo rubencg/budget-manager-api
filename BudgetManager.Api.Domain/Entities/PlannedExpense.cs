@@ -11,7 +11,7 @@ public class PlannedExpense : ICosmosEntity
     public string UserId { get; set; } = null!;
 
     [JsonProperty("itemType")]
-    public string ItemType { get; set; } = "plannedExpense";
+    public string ItemType { get; set; } = DomainConstants.PlannedExpensesType;
 
     [JsonProperty("name")]
     public string Name { get; set; } = null!;

@@ -28,7 +28,6 @@ public class CreatePlannedExpenseHandler : IRequestHandler<CreatePlannedExpenseC
         {
             Id = Guid.NewGuid().ToString(),
             UserId = request.UserId,
-            ItemType = "plannedExpense",
             Name = request.Name,
             Date = request.Date,
             IsRecurring = request.IsRecurring,
