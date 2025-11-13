@@ -59,6 +59,7 @@ public class Program
         builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
         builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<IPlannedExpenseRepository, PlannedExpenseRepository>();
 
         builder.Services.AddMediatrServices();
 
