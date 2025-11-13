@@ -60,6 +60,7 @@ public class Program
         builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
         builder.Services.AddScoped<IPlannedExpenseRepository, PlannedExpenseRepository>();
+        builder.Services.AddScoped<ISavingRepository, SavingRepository>();
 
         builder.Services.AddMediatrServices();
 

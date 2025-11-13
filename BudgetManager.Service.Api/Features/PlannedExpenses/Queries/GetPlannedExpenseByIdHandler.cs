@@ -1,3 +1,4 @@
+using BudgetManager.Api.Domain;
 using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using MediatR;
@@ -24,9 +25,11 @@ public class GetPlannedExpenseByIdHandler : IRequestHandler<GetPlannedExpenseByI
             request.PlannedExpenseId,
             request.UserId);
 
-        return await _plannedExpenseRepository.GetByIdAsync(
+        var plannedExpense = await _plannedExpenseRepository.GetByIdAsync(
             request.PlannedExpenseId,
             request.UserId,
             cancellationToken);
+
+        return plannedExpense?.ItemType != DomainConstants.PlannedExpensesType ? null : plannedExpense;
     }
 }

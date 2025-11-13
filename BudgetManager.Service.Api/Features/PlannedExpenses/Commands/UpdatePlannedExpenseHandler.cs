@@ -1,3 +1,4 @@
+using BudgetManager.Api.Domain;
 using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using MediatR;
@@ -30,7 +31,7 @@ public class UpdatePlannedExpenseHandler : IRequestHandler<UpdatePlannedExpenseC
             request.UserId,
             cancellationToken);
 
-        if (existingPlannedExpense == null)
+        if (existingPlannedExpense == null || existingPlannedExpense.ItemType != DomainConstants.PlannedExpensesType)
         {
             throw new InvalidOperationException($"PlannedExpense {request.PlannedExpenseId} not found");
         }
