@@ -9,7 +9,6 @@ public record GetTransactionsByMonthQuery : IRequest<GetTransactionsByMonthQuery
     public int Year { get; init; }
     public int Month { get; init; }
     public TransactionType? TransactionType { get; init; }
-    public required string AccountId { get; init; }
     public string? CategoryId { get; init; }
 }
 

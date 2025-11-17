@@ -6,7 +6,6 @@ namespace BudgetManager.Service.Features.Transactions.Commands;
 
 public record CreateTransactionCommand : IRequest<Transaction>
 {
-    public required string UserId { get; init; }
     public required TransactionType TransactionType { get; init; }
     public required decimal Amount { get; init; }
     public required DateTime Date { get; init; }

@@ -1,5 +1,6 @@
 using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
+using BudgetManager.Service.Services.UserContext;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Transactions.Commands;
@@ -7,27 +8,32 @@ namespace BudgetManager.Service.Features.Transactions.Commands;
 public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand, Transaction>
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CreateTransactionHandler> _logger;
 
     public CreateTransactionHandler(
         ITransactionRepository transactionRepository,
+        ICurrentUserService currentUserService,
         ILogger<CreateTransactionHandler> logger)
     {
         _transactionRepository = transactionRepository;
+        _currentUserService = currentUserService;
         _logger = logger;
     }
 
     public async Task<Transaction> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
+        var userId = _currentUserService.UserId;
+
         _logger.LogInformation(
             "Creating transaction for user {UserId}: Type={TransactionType}, Amount={Amount}",
-            request.UserId, request.TransactionType, request.Amount);
+            userId, request.TransactionType, request.Amount);
 
         // Create transaction entity
         var transaction = new Transaction
         {
             Id = Guid.NewGuid().ToString(),
-            UserId = request.UserId,
+            UserId = userId,
             TransactionType = request.TransactionType,
             Amount = request.Amount,
             Date = request.Date,
@@ -75,7 +81,7 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
 
         _logger.LogInformation(
             "Successfully created transaction {TransactionId} for user {UserId}",
-            createdTransaction.Id, request.UserId);
+            createdTransaction.Id, userId);
 
         return createdTransaction;
     }

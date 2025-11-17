@@ -27,13 +27,11 @@ public class CategoriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Category>> GetById(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var query = new GetCategoryByIdQuery
         {
-            CategoryId = id,
-            UserId = userId
+            CategoryId = id
         };
 
         var category = await _mediator.Send(query, cancellationToken);
@@ -60,7 +58,7 @@ public class CategoriesController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = category.Id, userId = category.UserId },
+            new { id = category.Id },
             category);
     }
 
@@ -100,13 +98,11 @@ public class CategoriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var command = new DeleteCategoryCommand
         {
-            CategoryId = id,
-            UserId = userId
+            CategoryId = id
         };
 
         try

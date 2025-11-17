@@ -5,7 +5,6 @@ namespace BudgetManager.Service.Features.Dashboard.Queries;
 
 public record GetDashboardQuery : IRequest<GetDashboardQueryResult>
 {
-    public required string UserId { get; init; }
     public int? Year { get; init; }
     public int? Month { get; init; }
 }

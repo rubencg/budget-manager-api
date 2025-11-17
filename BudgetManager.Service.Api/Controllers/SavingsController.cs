@@ -27,13 +27,11 @@ public class SavingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Saving>> GetById(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var query = new GetSavingByIdQuery
         {
-            SavingId = id,
-            UserId = userId
+            SavingId = id
         };
 
         var saving = await _mediator.Send(query, cancellationToken);
@@ -60,7 +58,7 @@ public class SavingsController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = saving.Id, userId = saving.UserId },
+            new { id = saving.Id },
             saving);
     }
 
@@ -100,13 +98,11 @@ public class SavingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var command = new DeleteSavingCommand
         {
-            SavingId = id,
-            UserId = userId
+            SavingId = id
         };
 
         try

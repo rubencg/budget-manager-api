@@ -28,13 +28,11 @@ public class TransactionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Transaction>> GetById(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var query = new GetTransactionByIdQuery
         {
-            TransactionId = id,
-            UserId = userId
+            TransactionId = id
         };
 
         var transaction = await _mediator.Send(query, cancellationToken);
@@ -56,7 +54,6 @@ public class TransactionsController : ControllerBase
         int year,
         int month,
         [FromQuery] TransactionType? type = null,
-        [FromQuery] string? accountId = null,
         [FromQuery] string? categoryId = null,
         CancellationToken cancellationToken = default)
     {
@@ -65,7 +62,6 @@ public class TransactionsController : ControllerBase
             Year = year,
             Month = month,
             TransactionType = type,
-            AccountId = accountId!,
             CategoryId = categoryId
         };
 
@@ -87,7 +83,7 @@ public class TransactionsController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = transaction.Id, userId = transaction.UserId },
+            new { id = transaction.Id },
             transaction);
     }
 
@@ -127,13 +123,11 @@ public class TransactionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var command = new DeleteTransactionCommand
         {
-            TransactionId = id,
-            UserId = userId
+            TransactionId = id
         };
 
         try

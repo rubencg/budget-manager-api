@@ -6,7 +6,6 @@ namespace BudgetManager.Service.Features.Categories.Commands;
 
 public record CreateCategoryCommand : IRequest<Category>
 {
-    public required string UserId { get; init; }
     public required string Name { get; init; }
     public required string Image { get; init; }
     public string? Color { get; init; }
