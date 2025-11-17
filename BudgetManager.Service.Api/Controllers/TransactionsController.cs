@@ -3,13 +3,14 @@ using BudgetManager.Api.Domain.Enums;
 using BudgetManager.Service.Features.Transactions.Commands;
 using BudgetManager.Service.Features.Transactions.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManager.Service.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class TransactionsController : ControllerBase
 {
     private readonly IMediator _mediator;

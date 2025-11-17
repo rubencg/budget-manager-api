@@ -2,13 +2,14 @@ using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Features.Savings.Commands;
 using BudgetManager.Service.Features.Savings.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManager.Service.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class SavingsController : ControllerBase
 {
     private readonly IMediator _mediator;
