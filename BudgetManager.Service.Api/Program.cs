@@ -1,6 +1,7 @@
 using BudgetManager.Service.Infrastructure.Cosmos;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using BudgetManager.Service.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
 
 namespace BudgetManager.Service;
@@ -16,7 +17,35 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            // Define the Bearer security scheme
+            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                Description = "JWT Authorization header using the Bearer scheme. Enter your token in the text input below."
+            });
+
+            // Require Bearer token for all endpoints
+            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            {
+                {
+                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    {
+                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        {
+                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
         // Configure Cosmos DB
         builder.Services.Configure<CosmosDbSettings>(
@@ -64,6 +93,38 @@ public class Program
 
         builder.Services.AddMediatrServices();
 
+        // Configure Auth0 from appsettings.json
+        var auth0Domain = builder.Configuration["Auth0:Domain"]
+            ?? Environment.GetEnvironmentVariable("AUTH0_DOMAIN")
+            ?? throw new InvalidOperationException("Auth0:Domain is not configured");
+        
+        var auth0Audience = builder.Configuration["Auth0:Audience"]
+            ?? Environment.GetEnvironmentVariable("AUTH0_AUDIENCE")
+            ?? throw new InvalidOperationException("Auth0:Audience is not configured");
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.Authority = $"https://{auth0Domain}/";
+            options.Audience = auth0Audience;
+
+            // Configure token validation and caching
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5) // Allow 5 minutes clock skew
+            };
+
+            // JWKS (public keys) are cached automatically
+            // By default: RefreshInterval = 24 hours, AutomaticRefreshInterval = 12 hours
+            // This allows offline operation once keys are cached
+        });
 
         var app = builder.Build();
 
@@ -80,8 +141,10 @@ public class Program
             app.UseHttpsRedirection();
         }
 
-        app.UseAuthorization();
+        // Enable authentication middleware (must come before authorization)
+        app.UseAuthentication();
 
+        app.UseAuthorization();
 
         app.MapControllers();
 

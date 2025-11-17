@@ -2,13 +2,14 @@ using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Features.Accounts.Commands;
 using BudgetManager.Service.Features.Accounts.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManager.Service.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class AccountsController : ControllerBase
 {
     private readonly IMediator _mediator;
