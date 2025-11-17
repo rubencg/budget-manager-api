@@ -1,6 +1,7 @@
 using BudgetManager.Service.Infrastructure.Cosmos;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using BudgetManager.Service.Services;
+using BudgetManager.Service.Services.UserContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
 
@@ -83,6 +84,12 @@ public class Program
 
             return new CosmosClient(settings.ConnectionString, cosmosClientOptions);
         });
+
+        // Register HTTP context accessor (required for ICurrentUserService)
+        builder.Services.AddHttpContextAccessor();
+
+        // Register user context service
+        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         // Register repositories
         builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();

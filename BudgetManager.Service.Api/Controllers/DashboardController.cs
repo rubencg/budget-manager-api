@@ -23,14 +23,12 @@ public class DashboardController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(GetDashboardQueryResult), StatusCodes.Status200OK)]
     public async Task<ActionResult<GetDashboardQueryResult>> GetDashboard(
-        [FromQuery] string userId,
         [FromQuery] int? year = null,
         [FromQuery] int? month = null,
         CancellationToken cancellationToken = default)
     {
         var query = new GetDashboardQuery
         {
-            UserId = userId,
             Year = year,
             Month = month
         };

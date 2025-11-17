@@ -1,5 +1,6 @@
 using BudgetManager.Api.Domain.Enums;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
+using BudgetManager.Service.Services.UserContext;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Dashboard.Queries;
@@ -8,15 +9,18 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<GetDashboardHandler> _logger;
 
     public GetDashboardHandler(
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
+        ICurrentUserService currentUserService,
         ILogger<GetDashboardHandler> logger)
     {
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
+        _currentUserService = currentUserService;
         _logger = logger;
     }
 
@@ -24,6 +28,8 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
         GetDashboardQuery request,
         CancellationToken cancellationToken)
     {
+        var userId = _currentUserService.UserId;
+
         // Determine the target year/month (default to current if not specified)
         var targetDate = request.Year.HasValue && request.Month.HasValue
             ? new DateTime(request.Year.Value, request.Month.Value, 1)
@@ -35,20 +41,20 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
 
         _logger.LogInformation(
             "Getting dashboard for user {UserId} for {YearMonth}",
-            request.UserId, yearMonth);
+            userId, yearMonth);
 
         // 1. Get balance: sum of all active account balances
-        var balance = await GetBalanceAsync(request.UserId, cancellationToken);
+        var balance = await GetBalanceAsync(userId, cancellationToken);
 
         // 2. Get last 5 transactions
         var recentTransactions = await _transactionRepository.GetRecentAsync(
-            request.UserId,
+            userId,
             5,
             cancellationToken);
 
         // 3. Get calendar view: daily activity for the month
         var calendarView = await GetCalendarViewAsync(
-            request.UserId,
+            userId,
             yearMonth,
             year,
             month,

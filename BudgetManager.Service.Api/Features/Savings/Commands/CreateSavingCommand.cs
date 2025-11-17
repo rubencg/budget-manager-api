@@ -5,7 +5,6 @@ namespace BudgetManager.Service.Features.Savings.Commands;
 
 public record CreateSavingCommand : IRequest<Saving>
 {
-    public required string UserId { get; init; }
     public required string Name { get; init; }
     public string? Icon { get; init; }
     public string? Color { get; init; }

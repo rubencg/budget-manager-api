@@ -6,5 +6,4 @@ namespace BudgetManager.Service.Features.PlannedExpenses.Queries;
 public record GetPlannedExpenseByIdQuery : IRequest<PlannedExpense?>
 {
     public required string PlannedExpenseId { get; init; }
-    public required string UserId { get; init; }
 }

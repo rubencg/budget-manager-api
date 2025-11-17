@@ -27,13 +27,11 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Account>> GetById(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var query = new GetAccountByIdQuery
         {
-            AccountId = id,
-            UserId = userId
+            AccountId = id
         };
 
         var account = await _mediator.Send(query, cancellationToken);
@@ -60,7 +58,7 @@ public class AccountsController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = account.Id, userId = account.UserId },
+            new { id = account.Id },
             account);
     }
 
@@ -100,13 +98,11 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var command = new DeleteAccountCommand
         {
-            AccountId = id,
-            UserId = userId
+            AccountId = id
         };
 
         try

@@ -1,5 +1,6 @@
 using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
+using BudgetManager.Service.Services.UserContext;
 using MediatR;
 
 namespace BudgetManager.Service.Features.PlannedExpenses.Commands;
@@ -7,27 +8,32 @@ namespace BudgetManager.Service.Features.PlannedExpenses.Commands;
 public class CreatePlannedExpenseHandler : IRequestHandler<CreatePlannedExpenseCommand, PlannedExpense>
 {
     private readonly IPlannedExpenseRepository _plannedExpenseRepository;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CreatePlannedExpenseHandler> _logger;
 
     public CreatePlannedExpenseHandler(
         IPlannedExpenseRepository plannedExpenseRepository,
+        ICurrentUserService currentUserService,
         ILogger<CreatePlannedExpenseHandler> logger)
     {
         _plannedExpenseRepository = plannedExpenseRepository;
+        _currentUserService = currentUserService;
         _logger = logger;
     }
 
     public async Task<PlannedExpense> Handle(CreatePlannedExpenseCommand request, CancellationToken cancellationToken)
     {
+        var userId = _currentUserService.UserId;
+
         _logger.LogInformation(
             "Creating planned expense {PlannedExpenseName} for user {UserId}",
             request.Name,
-            request.UserId);
+            userId);
 
         var plannedExpense = new PlannedExpense
         {
             Id = Guid.NewGuid().ToString(),
-            UserId = request.UserId,
+            UserId = userId,
             Name = request.Name,
             Date = request.Date,
             IsRecurring = request.IsRecurring,

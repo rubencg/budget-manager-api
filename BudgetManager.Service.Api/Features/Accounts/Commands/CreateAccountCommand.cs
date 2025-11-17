@@ -6,7 +6,6 @@ namespace BudgetManager.Service.Features.Accounts.Commands;
 
 public record CreateAccountCommand : IRequest<Account>
 {
-    public required string UserId { get; init; }
     public required string Name { get; init; }
     public decimal CurrentBalance { get; init; }
     public AccountType AccountType { get; init; }

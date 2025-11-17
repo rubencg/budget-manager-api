@@ -5,7 +5,6 @@ namespace BudgetManager.Service.Features.PlannedExpenses.Commands;
 
 public record CreatePlannedExpenseCommand : IRequest<PlannedExpense>
 {
-    public required string UserId { get; init; }
     public required string Name { get; init; }
     public required DateTime Date { get; init; }
     public bool IsRecurring { get; init; }

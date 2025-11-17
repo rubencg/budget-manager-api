@@ -27,13 +27,11 @@ public class PlannedExpensesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PlannedExpense>> GetById(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var query = new GetPlannedExpenseByIdQuery
         {
-            PlannedExpenseId = id,
-            UserId = userId
+            PlannedExpenseId = id
         };
 
         var plannedExpense = await _mediator.Send(query, cancellationToken);
@@ -60,7 +58,7 @@ public class PlannedExpensesController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = plannedExpense.Id, userId = plannedExpense.UserId },
+            new { id = plannedExpense.Id },
             plannedExpense);
     }
 
@@ -100,13 +98,11 @@ public class PlannedExpensesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         string id,
-        [FromQuery] string userId,
         CancellationToken cancellationToken = default)
     {
         var command = new DeletePlannedExpenseCommand
         {
-            PlannedExpenseId = id,
-            UserId = userId
+            PlannedExpenseId = id
         };
 
         try
