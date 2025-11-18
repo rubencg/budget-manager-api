@@ -1,3 +1,4 @@
+using BudgetManager.Service.Services.AccountBalance;
 using BudgetManager.Service.Services.UserContext;
 
 namespace BudgetManager.Service.Extensions;
@@ -21,6 +22,9 @@ public static class UserContextServiceExtensions
 
         // Register user context service
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        // Register account balance service
+        services.AddScoped<IAccountBalanceService, AccountBalanceService>();
 
         return services;
     }

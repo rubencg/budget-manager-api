@@ -8,7 +8,7 @@ public record CreateAccountCommand : IRequest<Account>
 {
     public required string Name { get; init; }
     public decimal CurrentBalance { get; init; }
-    public AccountType AccountType { get; init; }
+    public AccountType AccountType { get; init; } = null!;
     public string? Color { get; init; }
     public string? Image { get; init; }
     public bool IsArchived { get; init; } = false;
