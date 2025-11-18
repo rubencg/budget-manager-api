@@ -39,6 +39,13 @@ public class Transaction : ICosmosEntity
     [JsonProperty("toAccountName")]
     public string? ToAccountName { get; set; }
 
+    // For transfers only
+    [JsonProperty("fromAccountId")]
+    public string? FromAccountId { get; set; }
+
+    [JsonProperty("fromAccountName")]
+    public string? FromAccountName { get; set; }
+
     // Category references
     [JsonProperty("categoryId")]
     public string? CategoryId { get; set; }
