@@ -32,7 +32,7 @@ public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, Accoun
 
         // Get existing account to preserve CreatedAt
         var existingAccount = await _accountRepository.GetByIdAsync(
-            request.AccountId,
+            request.AccountId!,
             userId,
             cancellationToken);
 

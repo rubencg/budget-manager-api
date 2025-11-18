@@ -74,14 +74,11 @@ public class AccountsController : ControllerBase
         [FromBody] UpdateAccountCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (id != command.AccountId)
-        {
-            return BadRequest(new { message = "Account ID in URL does not match ID in body" });
-        }
+        var commandWithId = command with { AccountId = id };
 
         try
         {
-            var account = await _mediator.Send(command, cancellationToken);
+            var account = await _mediator.Send(commandWithId, cancellationToken);
             return Ok(account);
         }
         catch (InvalidOperationException ex)

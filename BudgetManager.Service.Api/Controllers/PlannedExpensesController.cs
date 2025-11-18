@@ -74,14 +74,11 @@ public class PlannedExpensesController : ControllerBase
         [FromBody] UpdatePlannedExpenseCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (id != command.PlannedExpenseId)
-        {
-            return BadRequest(new { message = "Planned expense ID in URL does not match ID in body" });
-        }
+        var commandWithId = command with { PlannedExpenseId = id };
 
         try
         {
-            var plannedExpense = await _mediator.Send(command, cancellationToken);
+            var plannedExpense = await _mediator.Send(commandWithId, cancellationToken);
             return Ok(plannedExpense);
         }
         catch (InvalidOperationException ex)

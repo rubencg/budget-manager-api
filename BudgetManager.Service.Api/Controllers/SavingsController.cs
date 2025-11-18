@@ -74,14 +74,11 @@ public class SavingsController : ControllerBase
         [FromBody] UpdateSavingCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (id != command.SavingId)
-        {
-            return BadRequest(new { message = "Saving ID in URL does not match ID in body" });
-        }
+        var commandWithId = command with { SavingId = id };
 
         try
         {
-            var saving = await _mediator.Send(command, cancellationToken);
+            var saving = await _mediator.Send(commandWithId, cancellationToken);
             return Ok(saving);
         }
         catch (InvalidOperationException ex)
