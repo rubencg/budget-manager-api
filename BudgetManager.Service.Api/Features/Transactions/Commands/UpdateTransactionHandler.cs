@@ -31,7 +31,7 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
 
         // Get existing transaction to preserve CreatedAt
         var existingTransaction = await _transactionRepository.GetByIdAsync(
-            request.TransactionId,
+            request.TransactionId!,
             userId,
             cancellationToken);
 
@@ -39,14 +39,14 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
         {
             _logger.LogError(
                 "Transaction {TransactionId} not found for user {UserId}",
-                request.TransactionId, userId);
-            throw new InvalidOperationException($"Transaction {request.TransactionId} not found");
+                request.TransactionId!, userId);
+            throw new InvalidOperationException($"Transaction {request.TransactionId!} not found");
         }
 
         // Update transaction entity
         var transaction = new Transaction
         {
-            Id = request.TransactionId,
+            Id = request.TransactionId!,
             UserId = userId,
             TransactionType = request.TransactionType,
             Amount = request.Amount,
@@ -96,7 +96,7 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
 
         _logger.LogInformation(
             "Successfully updated transaction {TransactionId} for user {UserId}",
-            request.TransactionId, userId);
+            request.TransactionId!, userId);
 
         return updatedTransaction;
     }

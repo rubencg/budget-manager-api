@@ -32,13 +32,13 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Cate
 
         // Get existing category to preserve CreatedAt
         var existingCategory = await _categoryRepository.GetByIdAsync(
-            request.CategoryId,
+            request.CategoryId!,
             userId,
             cancellationToken);
 
         if (existingCategory == null)
         {
-            throw new InvalidOperationException($"Category {request.CategoryId} not found");
+            throw new InvalidOperationException($"Category {request.CategoryId!} not found");
         }
 
         // Update category with new values

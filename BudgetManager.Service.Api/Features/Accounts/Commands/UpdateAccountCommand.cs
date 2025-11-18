@@ -5,5 +5,5 @@ namespace BudgetManager.Service.Features.Accounts.Commands;
 
 public record UpdateAccountCommand : CreateAccountCommand, IRequest<Account>
 {
-    public required string AccountId { get; init; }
+    public string? AccountId { get; init; }
 }

@@ -99,14 +99,11 @@ public class TransactionsController : ControllerBase
         [FromBody] UpdateTransactionCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (id != command.TransactionId)
-        {
-            return BadRequest(new { message = "Transaction ID in URL does not match ID in body" });
-        }
+        var commandWithId = command with { TransactionId = id };
 
         try
         {
-            var transaction = await _mediator.Send(command, cancellationToken);
+            var transaction = await _mediator.Send(commandWithId, cancellationToken);
             return Ok(transaction);
         }
         catch (InvalidOperationException ex)

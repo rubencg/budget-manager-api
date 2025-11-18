@@ -5,5 +5,5 @@ namespace BudgetManager.Service.Features.PlannedExpenses.Commands;
 
 public record UpdatePlannedExpenseCommand : CreatePlannedExpenseCommand, IRequest<PlannedExpense>
 {
-    public required string PlannedExpenseId { get; init; }
+    public string? PlannedExpenseId { get; init; }
 }

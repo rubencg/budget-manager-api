@@ -33,13 +33,13 @@ public class UpdatePlannedExpenseHandler : IRequestHandler<UpdatePlannedExpenseC
 
         // Get existing planned expense to preserve CreatedAt
         var existingPlannedExpense = await _plannedExpenseRepository.GetByIdAsync(
-            request.PlannedExpenseId,
+            request.PlannedExpenseId!,
             userId,
             cancellationToken);
 
         if (existingPlannedExpense == null || existingPlannedExpense.ItemType != DomainConstants.PlannedExpensesType)
         {
-            throw new InvalidOperationException($"PlannedExpense {request.PlannedExpenseId} not found");
+            throw new InvalidOperationException($"PlannedExpense {request.PlannedExpenseId!} not found");
         }
 
         // Update planned expense with new values

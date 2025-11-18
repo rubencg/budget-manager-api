@@ -31,16 +31,16 @@ public class UpdateSavingHandler : IRequestHandler<UpdateSavingCommand, Saving>
             request.SavingId,
             userId);
 
-        var existingSaving = await _savingRepository.GetByIdAsync(request.SavingId, userId, cancellationToken);
+        var existingSaving = await _savingRepository.GetByIdAsync(request.SavingId!, userId, cancellationToken);
 
         if (existingSaving == null || existingSaving.ItemType != DomainConstants.SavingsType)
         {
-            throw new InvalidOperationException($"Saving with ID {request.SavingId} not found");
+            throw new InvalidOperationException($"Saving with ID {request.SavingId!} not found");
         }
 
         var updatedSaving = new Saving
         {
-            Id = request.SavingId,
+            Id = request.SavingId!,
             UserId = userId,
             Name = request.Name,
             Icon = request.Icon,

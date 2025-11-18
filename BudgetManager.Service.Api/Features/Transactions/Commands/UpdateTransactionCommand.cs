@@ -5,5 +5,5 @@ namespace BudgetManager.Service.Features.Transactions.Commands;
 
 public record UpdateTransactionCommand : CreateTransactionCommand, IRequest<Transaction>
 {
-    public required string TransactionId { get; init; }
+    public string? TransactionId { get; init; }
 }

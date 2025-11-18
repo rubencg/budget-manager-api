@@ -74,14 +74,11 @@ public class CategoriesController : ControllerBase
         [FromBody] UpdateCategoryCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (id != command.CategoryId)
-        {
-            return BadRequest(new { message = "Category ID in URL does not match ID in body" });
-        }
+        var commandWithId = command with { CategoryId = id };
 
         try
         {
-            var category = await _mediator.Send(command, cancellationToken);
+            var category = await _mediator.Send(commandWithId, cancellationToken);
             return Ok(category);
         }
         catch (InvalidOperationException ex)
