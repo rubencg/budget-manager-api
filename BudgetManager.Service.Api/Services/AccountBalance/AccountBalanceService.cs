@@ -51,6 +51,15 @@ public class AccountBalanceService : IAccountBalanceService
                 break;
 
             case TransactionType.Transfer:
+                if (string.IsNullOrEmpty(transaction.FromAccountId))
+                {
+                    _logger.LogError(
+                        "Transfer transaction {TransactionId} is missing FromAccountId",
+                        transaction.Id);
+                    throw new InvalidOperationException(
+                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId)");
+                }
+
                 if (string.IsNullOrEmpty(transaction.ToAccountId))
                 {
                     _logger.LogError(
@@ -62,7 +71,7 @@ public class AccountBalanceService : IAccountBalanceService
 
                 // Deduct from source account
                 await DeductFromAccountAsync(
-                    transaction.AccountId,
+                    transaction.FromAccountId,
                     transaction.Amount,
                     userId,
                     transaction.TransactionType,
@@ -125,6 +134,15 @@ public class AccountBalanceService : IAccountBalanceService
                 break;
 
             case TransactionType.Transfer:
+                if (string.IsNullOrEmpty(transaction.FromAccountId))
+                {
+                    _logger.LogError(
+                        "Transfer transaction {TransactionId} is missing FromAccountId",
+                        transaction.Id);
+                    throw new InvalidOperationException(
+                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId)");
+                }
+
                 if (string.IsNullOrEmpty(transaction.ToAccountId))
                 {
                     _logger.LogError(
@@ -136,7 +154,7 @@ public class AccountBalanceService : IAccountBalanceService
 
                 // Reverse transfer: add back to source account
                 await AddToAccountAsync(
-                    transaction.AccountId,
+                    transaction.FromAccountId,
                     transaction.Amount,
                     userId,
                     transaction.TransactionType,

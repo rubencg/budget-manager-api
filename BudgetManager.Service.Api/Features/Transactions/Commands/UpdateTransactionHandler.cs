@@ -3,6 +3,7 @@ using BudgetManager.Api.Domain.Enums;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using BudgetManager.Service.Services.AccountBalance;
 using BudgetManager.Service.Services.UserContext;
+using BudgetManager.Service.Services.Validation;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Transactions.Commands;
@@ -10,20 +11,20 @@ namespace BudgetManager.Service.Features.Transactions.Commands;
 public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand, Transaction>
 {
     private readonly ITransactionRepository _transactionRepository;
-    private readonly IAccountRepository _accountRepository;
+    private readonly ITransactionValidationService _transactionValidationService;
     private readonly IAccountBalanceService _accountBalanceService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<UpdateTransactionHandler> _logger;
 
     public UpdateTransactionHandler(
         ITransactionRepository transactionRepository,
-        IAccountRepository accountRepository,
+        ITransactionValidationService transactionValidationService,
         IAccountBalanceService accountBalanceService,
         ICurrentUserService currentUserService,
         ILogger<UpdateTransactionHandler> logger)
     {
         _transactionRepository = transactionRepository;
-        _accountRepository = accountRepository;
+        _transactionValidationService = transactionValidationService;
         _accountBalanceService = accountBalanceService;
         _currentUserService = currentUserService;
         _logger = logger;
@@ -53,8 +54,28 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
 
         // VALIDATIONS
         ValidateUpdateRules(oldTransaction, request);
-        await ValidateAccountExistsAsync(request.AccountId, userId, cancellationToken);
-        ValidateTransferRules(request);
+
+        if (request.TransactionType == TransactionType.Transfer)
+        {
+            // For transfers, validate both FromAccountId and ToAccountId
+            _transactionValidationService.ValidateTransferRules(
+                request.FromAccountId,
+                request.ToAccountId);
+
+            await _transactionValidationService.ValidateTransferAccountsAsync(
+                request.FromAccountId!,
+                request.ToAccountId!,
+                userId,
+                cancellationToken);
+        }
+        else
+        {
+            // For non-transfer transactions, validate AccountId
+            await _transactionValidationService.ValidateAccountExistsAsync(
+                request.AccountId!,
+                userId,
+                cancellationToken);
+        }
 
         // UPDATE TRANSACTION
         var updatedTransaction = new Transaction
@@ -67,10 +88,23 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
             CreatedAt = oldTransaction.CreatedAt, // Preserve original creation date
 
             // Account references
-            AccountId = request.AccountId,
-            AccountName = request.AccountName,
-            ToAccountId = request.ToAccountId,
-            ToAccountName = request.ToAccountName,
+            // For ALL transaction types, set AccountId and AccountName
+            AccountId = request.AccountId!,
+            AccountName = request.AccountName!,
+
+            // For TRANSFERS ONLY, also set FromAccountId/ToAccountId
+            FromAccountId = request.TransactionType == TransactionType.Transfer
+                ? request.FromAccountId
+                : null,
+            FromAccountName = request.TransactionType == TransactionType.Transfer
+                ? request.FromAccountName
+                : null,
+            ToAccountId = request.TransactionType == TransactionType.Transfer
+                ? request.ToAccountId
+                : null,
+            ToAccountName = request.TransactionType == TransactionType.Transfer
+                ? request.ToAccountName
+                : null,
 
             // Category references
             CategoryId = request.CategoryId,
@@ -214,60 +248,4 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
         }
     }
 
-    /// <summary>
-    /// Validates that the account exists and is not archived.
-    /// </summary>
-    private async Task ValidateAccountExistsAsync(
-        string accountId,
-        string userId,
-        CancellationToken cancellationToken)
-    {
-        var account = await _accountRepository.GetByIdAsync(accountId, userId, cancellationToken);
-
-        if (account == null)
-        {
-            _logger.LogError(
-                "Account {AccountId} not found for user {UserId}",
-                accountId, userId);
-            throw new InvalidOperationException($"Account {accountId} not found");
-        }
-
-        if (account.IsArchived)
-        {
-            _logger.LogError(
-                "Cannot update transaction with archived account {AccountId}",
-                accountId);
-            throw new InvalidOperationException(
-                $"Cannot use archived account {account.Name} for transactions");
-        }
-    }
-
-    /// <summary>
-    /// Validates transfer-specific business rules.
-    /// </summary>
-    private void ValidateTransferRules(UpdateTransactionCommand request)
-    {
-        if (request.TransactionType != TransactionType.Transfer)
-            return;
-
-        // ToAccountId is required for transfers
-        if (string.IsNullOrEmpty(request.ToAccountId))
-        {
-            _logger.LogError("Transfer transaction is missing ToAccountId");
-            throw new InvalidOperationException("ToAccountId is required for transfer transactions");
-        }
-
-        // Cannot transfer to same account
-        if (request.AccountId == request.ToAccountId)
-        {
-            _logger.LogError(
-                "Transfer transaction has same source and destination account: {AccountId}",
-                request.AccountId);
-            throw new InvalidOperationException("Cannot transfer to the same account");
-        }
-
-        // Note: We don't validate ToAccountId existence here because we want to keep
-        // the validation lightweight. The AccountBalanceService will validate this
-        // when applying the balance update.
-    }
 }

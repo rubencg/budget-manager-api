@@ -11,10 +11,12 @@ public record CreateTransactionCommand : IRequest<Transaction>
     public required DateTime Date { get; init; }
 
     // Account references
-    public required string AccountId { get; init; }
-    public required string AccountName { get; init; }
+    public string? AccountId { get; init; }
+    public string? AccountName { get; init; }
     public string? ToAccountId { get; init; }
     public string? ToAccountName { get; init; }
+    public string? FromAccountId { get; init; }
+    public string? FromAccountName { get; init; }
 
     // Category references
     public string? CategoryId { get; init; }
