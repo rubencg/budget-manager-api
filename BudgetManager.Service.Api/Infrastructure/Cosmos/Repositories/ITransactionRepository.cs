@@ -17,6 +17,8 @@ public interface ITransactionRepository
 
     Task<List<Transaction>> GetRecentAsync(
         string userId,
+        int year,
+        int month,
         int count = 20,
         CancellationToken cancellationToken = default);
 

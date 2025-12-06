@@ -74,14 +74,19 @@ public class TransactionRepository : CosmosRepositoryBase<Transaction>, ITransac
 
     public Task<List<Transaction>> GetRecentAsync(
         string userId,
+        int year,
+        int month,
         int count = 20,
         CancellationToken cancellationToken = default)
     {
         ValidateParameter(userId, nameof(userId));
 
+        var yearMonth = $"{year}-{month:D2}";
+
         var queryDefinition = new QueryDefinition(
-            "SELECT TOP @count * FROM c ORDER BY c.date DESC, c.createdAt DESC")
-            .WithParameter("@count", count);
+            "SELECT TOP @count * FROM c WHERE c.yearMonth = @yearMonth ORDER BY c.date DESC, c.createdAt DESC")
+            .WithParameter("@count", count)
+            .WithParameter("@yearMonth", yearMonth);
 
         return ExecuteQueryAsync(queryDefinition, userId, nameof(GetRecentAsync), cancellationToken);
     }
