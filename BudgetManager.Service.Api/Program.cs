@@ -5,6 +5,8 @@ namespace BudgetManager.Service;
 
 public class Program
 {
+    private const string _corsPolicyName = "AllowLocalhost3000";
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,17 @@ public class Program
         builder.Services.AddMediatrServices();
         builder.Services.AddUserContext();
         builder.Services.AddAuth0Authentication(builder.Configuration);
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(_corsPolicyName,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+        });
 
         var app = builder.Build();
 
@@ -34,6 +47,7 @@ public class Program
             app.UseHttpsRedirection();
         }
 
+        app.UseCors(_corsPolicyName);
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
