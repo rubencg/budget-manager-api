@@ -49,6 +49,8 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
         // 2. Get last 5 transactions
         var recentTransactions = await _transactionRepository.GetRecentAsync(
             userId,
+            year,
+            month,
             5,
             cancellationToken);
 
