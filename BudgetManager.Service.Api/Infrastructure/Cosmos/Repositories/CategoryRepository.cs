@@ -41,8 +41,8 @@ public class CategoryRepository : CosmosRepositoryBase<Category>, ICategoryRepos
         ValidateParameter(userId, nameof(userId));
 
         var queryDefinition = new QueryDefinition(
-            "SELECT * FROM c WHERE c.categoryType = @categoryType")
-            .WithParameter("@categoryType", (int)categoryType);
+            "SELECT * FROM c WHERE c.categoryType = @categoryType ORDER BY c.name")
+            .WithParameter("@categoryType", categoryType.ToString().ToLowerInvariant());
 
         return await ExecuteQueryAsync(
             queryDefinition,

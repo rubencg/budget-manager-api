@@ -20,6 +20,42 @@ public class CategoriesController : ControllerBase
     }
 
     /// <summary>
+    /// Get all expense categories
+    /// </summary>
+    [HttpGet("expense")]
+    [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<Category>>> GetExpenseCategories(
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetCategoriesByTypeQuery
+        {
+            CategoryType = BudgetManager.Api.Domain.Enums.CategoryType.Expense
+        };
+
+        var categories = await _mediator.Send(query, cancellationToken);
+
+        return Ok(categories);
+    }
+
+    /// <summary>
+    /// Get all income categories
+    /// </summary>
+    [HttpGet("income")]
+    [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<Category>>> GetIncomeCategories(
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetCategoriesByTypeQuery
+        {
+            CategoryType = BudgetManager.Api.Domain.Enums.CategoryType.Income
+        };
+
+        var categories = await _mediator.Send(query, cancellationToken);
+
+        return Ok(categories);
+    }
+
+    /// <summary>
     /// Get a single category by ID
     /// </summary>
     [HttpGet("{id}")]
