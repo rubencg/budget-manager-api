@@ -36,32 +36,27 @@ public class TransactionRepository : CosmosRepositoryBase<Transaction>, ITransac
         var queryBuilder = new StringBuilder();
         queryBuilder.Append("SELECT * FROM c WHERE c.yearMonth = @yearMonth");
 
-        var queryDefinition = new QueryDefinition(queryBuilder.ToString())
-            .WithParameter("@yearMonth", yearMonth);
-
         if (transactionType.HasValue)
         {
             queryBuilder.Append(" AND c.transactionType = @transactionType");
-            queryDefinition = queryDefinition.WithParameter("@transactionType", transactionType.Value.ToString());
         }
 
         if (!string.IsNullOrEmpty(accountId))
         {
             queryBuilder.Append(" AND c.accountId = @accountId");
-            queryDefinition = queryDefinition.WithParameter("@accountId", accountId);
         }
 
         if (!string.IsNullOrEmpty(categoryId))
         {
             queryBuilder.Append(" AND c.categoryId = @categoryId");
-            queryDefinition = queryDefinition.WithParameter("@categoryId", categoryId);
         }
 
         queryBuilder.Append(" ORDER BY c.date DESC");
-        queryDefinition = new QueryDefinition(queryBuilder.ToString());
 
-        // Re-apply parameters after rebuilding query
-        queryDefinition = queryDefinition.WithParameter("@yearMonth", yearMonth);
+        // Build the final query with all parameters
+        var queryDefinition = new QueryDefinition(queryBuilder.ToString())
+            .WithParameter("@yearMonth", yearMonth);
+
         if (transactionType.HasValue)
             queryDefinition = queryDefinition.WithParameter("@transactionType", transactionType.Value.ToString());
         if (!string.IsNullOrEmpty(accountId))

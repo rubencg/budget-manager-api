@@ -2,6 +2,7 @@
 using BudgetManager.Api.Domain.Enums;
 using BudgetManager.Service.Features.Transactions.Commands;
 using BudgetManager.Service.Features.Transactions.Queries;
+using BudgetManager.Service.Infrastructure.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,12 +50,16 @@ public class TransactionsController : ControllerBase
     /// Get transactions for a specific month
     /// </summary>
     [HttpGet("month/{year}/{month}")]
-    [ProducesResponseType(typeof(GetTransactionsByMonthQueryResult), StatusCodes.Status200OK)]
-    public async Task<ActionResult<GetTransactionsByMonthQueryResult>> GetByMonth(
+    [ProducesResponseType(typeof(PagedResult<Transaction>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<Transaction>>> GetByMonth(
         int year,
         int month,
         [FromQuery] TransactionType? type = null,
         [FromQuery] string? categoryId = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string sortBy = "date",
+        [FromQuery] string sortDirection = "desc",
         CancellationToken cancellationToken = default)
     {
         var query = new GetTransactionsByMonthQuery
@@ -62,7 +67,17 @@ public class TransactionsController : ControllerBase
             Year = year,
             Month = month,
             TransactionType = type,
-            CategoryId = categoryId
+            CategoryId = categoryId,
+            Pagination = new PaginationParams
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            },
+            Sort = new SortParams
+            {
+                SortBy = sortBy,
+                SortDirection = sortDirection
+            }
         };
 
         var result = await _mediator.Send(query, cancellationToken);
