@@ -10,6 +10,8 @@ public interface IAccountRepository
 
     Task<List<Account>> GetActiveAccountsAsync(string userId, CancellationToken cancellationToken = default);
 
+    Task<List<Account>> GetDashboardAccountsAsync(string userId, CancellationToken cancellationToken = default);
+
     Task<Account> CreateAsync(Account account, CancellationToken cancellationToken = default);
 
     Task<Account> UpdateAsync(Account account, CancellationToken cancellationToken = default);
