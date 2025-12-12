@@ -1,5 +1,6 @@
 using BudgetManager.Api.Domain.Enums;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BudgetManager.Api.Domain.Entities;
 
@@ -21,6 +22,7 @@ public class Category : ICosmosEntity
     public string? Color { get; set; }
 
     [JsonProperty("categoryType")]
+    [JsonConverter(typeof(StringEnumConverter), true)]
     public CategoryType CategoryType { get; set; }
 
     [JsonProperty("subcategories")]
