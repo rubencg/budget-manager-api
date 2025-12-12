@@ -12,7 +12,11 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new BudgetManager.Service.Infrastructure.Json.DecimalJsonConverter());
+            });
         builder.Services.AddSwaggerDocumentation();
         builder.Services.AddCosmosDb(builder.Configuration, builder.Environment);
         builder.Services.AddRepositories();

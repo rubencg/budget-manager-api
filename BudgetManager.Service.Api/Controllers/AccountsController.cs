@@ -45,6 +45,19 @@ public class AccountsController : ControllerBase
     }
 
     /// <summary>
+    /// Get accounts for dashboard grouped by type
+    /// </summary>
+    [HttpGet("dashboard")]
+    [ProducesResponseType(typeof(List<AccountDashboardGroupDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<AccountDashboardGroupDto>>> GetDashboard(
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetAccountsDashboardQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Create a new account
     /// </summary>
     [HttpPost]
