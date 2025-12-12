@@ -51,6 +51,17 @@ public class AccountRepository : CosmosRepositoryBase<Account>, IAccountReposito
         return ExecuteQueryAsync(queryDefinition, userId, nameof(GetDashboardAccountsAsync), cancellationToken);
     }
 
+    public Task<List<Account>> GetArchivedAccountsAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        ValidateParameter(userId, nameof(userId));
+
+        // Filter by isArchived = true
+        var queryDefinition = new QueryDefinition("SELECT * FROM c WHERE c.isArchived = true");
+
+        return ExecuteQueryAsync(queryDefinition, userId, nameof(GetArchivedAccountsAsync), cancellationToken);
+    }
+
+
     public Task<Account> CreateAsync(Account account, CancellationToken cancellationToken = default)
         => CreateInternalAsync(account, cancellationToken);
 

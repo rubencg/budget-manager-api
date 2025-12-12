@@ -1,4 +1,5 @@
 using BudgetManager.Api.Domain.Entities;
+using BudgetManager.Service.Infrastructure.Pagination;
 using Microsoft.Azure.Cosmos;
 
 namespace BudgetManager.Service.Infrastructure.Cosmos.Repositories;
@@ -212,5 +213,32 @@ public abstract class CosmosRepositoryBase<TEntity> where TEntity : ICosmosEntit
     {
         ValidateParameter(value1, name1);
         ValidateParameter(value2, name2);
+    }
+
+    /// <summary>
+    /// Apply sorting and pagination to a list of items
+    /// </summary>
+    protected PagedResult<TResult> ApplySortingAndPagination<TResult>(
+        List<TResult> items,
+        PaginationParams paginationParams,
+        SortParams sortParams,
+        Dictionary<string, Func<TResult, object>> sortFieldMap,
+        string defaultSortField)
+    {
+        // Apply sorting
+        var sortBy = sortParams.SortBy?.ToLower() ?? defaultSortField;
+        
+        if (!sortFieldMap.ContainsKey(sortBy))
+        {
+            Logger.LogWarning("Invalid sort field '{SortBy}', using default '{DefaultSort}'", sortBy, defaultSortField);
+            sortBy = defaultSortField;
+        }
+
+        var sortedItems = sortParams.IsDescending
+            ? items.OrderByDescending(sortFieldMap[sortBy]).ToList()
+            : items.OrderBy(sortFieldMap[sortBy]).ToList();
+
+        // Apply pagination
+        return PagedResult<TResult>.Create(sortedItems, paginationParams.PageNumber, paginationParams.PageSize);
     }
 }
