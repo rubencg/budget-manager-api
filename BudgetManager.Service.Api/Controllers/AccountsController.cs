@@ -1,6 +1,7 @@
 using BudgetManager.Api.Domain.Entities;
 using BudgetManager.Service.Features.Accounts.Commands;
 using BudgetManager.Service.Features.Accounts.Queries;
+using BudgetManager.Service.Infrastructure.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,36 @@ public class AccountsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var query = new GetAccountsDashboardQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Get archived accounts with pagination and sorting
+    /// </summary>
+    [HttpGet("archived")]
+    [ProducesResponseType(typeof(PagedResult<Account>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<Account>>> GetArchived(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string sortBy = "updatedAt",
+        [FromQuery] string sortDirection = "desc",
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetArchivedAccountsQuery
+        {
+            Pagination = new PaginationParams
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            },
+            Sort = new SortParams
+            {
+                SortBy = sortBy,
+                SortDirection = sortDirection
+            }
+        };
+
         var result = await _mediator.Send(query, cancellationToken);
         return Ok(result);
     }
