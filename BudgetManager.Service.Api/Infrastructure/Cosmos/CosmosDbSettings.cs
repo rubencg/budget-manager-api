@@ -8,5 +8,6 @@ public class CosmosDbSettings
     public string AccountsContainer { get; set; } = null!;
     public string CategoriesContainer { get; set; } = null!;
     public string PlannedItemsContainer { get; set; } = null!;
+    public string MonthlyTransactionsContainer { get; set; } = null!;
     public string UsersContainer { get; set; } = null!;
 }
