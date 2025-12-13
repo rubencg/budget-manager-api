@@ -45,6 +45,7 @@ public class UpdatePlannedExpenseHandler : IRequestHandler<UpdatePlannedExpenseC
         // Update planned expense with new values
         existingPlannedExpense.Name = request.Name;
         existingPlannedExpense.Date = request.Date;
+        existingPlannedExpense.DayOfMonth = request.DayOfMonth;
         existingPlannedExpense.IsRecurring = request.IsRecurring;
         existingPlannedExpense.TotalAmount = request.TotalAmount;
         existingPlannedExpense.CategoryId = request.CategoryId;

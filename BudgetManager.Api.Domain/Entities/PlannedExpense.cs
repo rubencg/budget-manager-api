@@ -17,7 +17,10 @@ public class PlannedExpense : ICosmosEntity
     public string Name { get; set; } = null!;
 
     [JsonProperty("date")]
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
+
+    [JsonProperty("dayOfMonth")]
+    public int? DayOfMonth { get; set; }
 
     [JsonProperty("isRecurring")]
     public bool IsRecurring { get; set; }
