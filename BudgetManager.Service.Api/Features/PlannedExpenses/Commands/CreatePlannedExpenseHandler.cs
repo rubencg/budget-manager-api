@@ -36,6 +36,7 @@ public class CreatePlannedExpenseHandler : IRequestHandler<CreatePlannedExpenseC
             UserId = userId,
             Name = request.Name,
             Date = request.Date,
+            DayOfMonth = request.DayOfMonth,
             IsRecurring = request.IsRecurring,
             TotalAmount = request.TotalAmount,
             CategoryId = request.CategoryId,
