@@ -55,6 +55,35 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
         // VALIDATIONS
         ValidateUpdateRules(oldTransaction, request);
 
+        // Validate OLD account(s) still exist (needed for balance reversal)
+        // Only check if the old transaction was applied (otherwise no balance to reverse)
+        bool oldApplied = IsTransactionApplied(oldTransaction);
+        if (oldApplied)
+        {
+            if (oldTransaction.TransactionType == TransactionType.Transfer)
+            {
+                // For transfers, validate both old FromAccount and ToAccount still exist
+                await _transactionValidationService.ValidateAccountExistsForReversalAsync(
+                    oldTransaction.FromAccountId!,
+                    userId,
+                    cancellationToken);
+
+                await _transactionValidationService.ValidateAccountExistsForReversalAsync(
+                    oldTransaction.ToAccountId!,
+                    userId,
+                    cancellationToken);
+            }
+            else
+            {
+                // For non-transfer transactions, validate old AccountId still exists
+                await _transactionValidationService.ValidateAccountExistsForReversalAsync(
+                    oldTransaction.AccountId,
+                    userId,
+                    cancellationToken);
+            }
+        }
+
+        // Validate NEW account(s) exist
         if (request.TransactionType == TransactionType.Transfer)
         {
             // For transfers, validate both FromAccountId and ToAccountId

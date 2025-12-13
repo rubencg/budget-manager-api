@@ -46,4 +46,14 @@ public interface ITransactionValidationService
     /// <param name="cancellationToken">Cancellation token</param>
     /// <exception cref="InvalidOperationException">Thrown when either account is not found or is archived</exception>
     Task ValidateTransferAccountsAsync(string fromAccountId, string toAccountId, string userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Validates that an account exists for balance reversal purposes.
+    /// Unlike ValidateAccountExistsAsync, this allows archived accounts since we need to reverse balances even on archived accounts.
+    /// </summary>
+    /// <param name="accountId">The account ID to validate</param>
+    /// <param name="userId">The user ID for security validation</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <exception cref="InvalidOperationException">Thrown when account is not found</exception>
+    Task ValidateAccountExistsForReversalAsync(string accountId, string userId, CancellationToken cancellationToken);
 }

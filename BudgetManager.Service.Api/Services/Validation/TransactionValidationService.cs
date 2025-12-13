@@ -153,4 +153,30 @@ public class TransactionValidationService : ITransactionValidationService
             "Transfer accounts validated successfully: FromAccountId={FromAccountId}, ToAccountId={ToAccountId}",
             fromAccountId, toAccountId);
     }
+
+    /// <inheritdoc />
+    public async Task ValidateAccountExistsForReversalAsync(
+        string accountId,
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        var account = await _accountRepository.GetByIdAsync(accountId, userId, cancellationToken);
+
+        if (account == null)
+        {
+            _logger.LogError(
+                "Account {AccountId} not found for user {UserId} during balance reversal validation",
+                accountId, userId);
+            throw new InvalidOperationException(
+                $"Cannot update transaction: original account {accountId} no longer exists. " +
+                "The account may have been deleted. Please contact support if you need to update this transaction.");
+        }
+
+        // Note: We allow archived accounts here because we need to reverse balances
+        // even if the account was archived after the transaction was created
+
+        _logger.LogDebug(
+            "Account {AccountId} validated successfully for reversal for user {UserId}",
+            accountId, userId);
+    }
 }
