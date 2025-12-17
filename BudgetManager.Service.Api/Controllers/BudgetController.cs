@@ -27,4 +27,11 @@ public class BudgetController : ControllerBase
         var result = await _mediator.Send(new GetIncomeAfterFixedExpensesQuery(_currentUserService.UserId, year, month));
         return Ok(result);
     }
+
+    [HttpGet("plannedExpenses/{year}/{month}")]
+    public async Task<ActionResult<PlannedExpensesResponseDto>> GetPlannedExpenses(int year, int month, [FromQuery] string? plannedExpenseId)
+    {
+        var result = await _mediator.Send(new GetPlannedExpensesQuery(_currentUserService.UserId, year, month, plannedExpenseId));
+        return Ok(result);
+    }
 }
