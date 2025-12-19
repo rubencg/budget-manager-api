@@ -57,6 +57,7 @@ public class GetIncomeAfterFixedExpensesHandler : IRequestHandler<GetIncomeAfter
                      UserId = mt.UserId,
                      Amount = amount,
                      IsApplied = isApplied,
+                     TransactionId = linkedTransaction?.Id,
                      Notes = mt.Notes,
                      DayOfMonth = mt.DayOfMonth,
                      Name = mt.Notes, // Assuming Notes as name for monthly trans seems typical or use another field if available
@@ -90,6 +91,7 @@ public class GetIncomeAfterFixedExpensesHandler : IRequestHandler<GetIncomeAfter
                      UserId = mt.UserId,
                      Amount = amount,
                      IsApplied = isApplied,
+                     TransactionId = linkedTransaction?.Id,
                      Notes = mt.Notes,
                      DayOfMonth = mt.DayOfMonth,
                      Name = mt.Notes,
@@ -123,6 +125,7 @@ public class GetIncomeAfterFixedExpensesHandler : IRequestHandler<GetIncomeAfter
                     UserId = s.UserId,
                     Amount = amount,
                     IsApplied = isApplied,
+                    TransactionId = linkedTransaction?.Id,
                     Name = s.Name,
                     Icon = s.Icon,
                     Color = s.Color,

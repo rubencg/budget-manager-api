@@ -47,6 +47,9 @@ public class BudgetSectionItemDto
     [JsonProperty("isApplied")]
     public bool IsApplied { get; set; }
 
+    [JsonProperty("transactionId")]
+    public string? TransactionId { get; set; }
+
     [JsonProperty("notes")]
     public string? Notes { get; set; }
 
