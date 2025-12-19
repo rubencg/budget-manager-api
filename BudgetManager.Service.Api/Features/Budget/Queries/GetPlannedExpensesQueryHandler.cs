@@ -135,6 +135,7 @@ public class GetPlannedExpensesQueryHandler : IRequestHandler<GetPlannedExpenses
                 UserId = t.UserId,
                 Amount = t.Amount,
                 IsApplied = t.IsApplied,
+                TransactionId = t.Id,
                 Notes = t.Notes,
                 Icon = t.CategoryImage,
                 Color = t.CategoryColor, // Or verify if color matches 
