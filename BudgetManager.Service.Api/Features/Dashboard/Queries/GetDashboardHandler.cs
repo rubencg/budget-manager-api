@@ -1,4 +1,5 @@
 using BudgetManager.Api.Domain.Enums;
+using BudgetManager.Service.Api.Features.Budget.DTOs;
 using BudgetManager.Service.Infrastructure.Cosmos.Repositories;
 using BudgetManager.Service.Services.UserContext;
 using MediatR;
@@ -9,17 +10,20 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly ISavingRepository _savingRepository;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<GetDashboardHandler> _logger;
 
     public GetDashboardHandler(
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
+        ISavingRepository savingRepository,
         ICurrentUserService currentUserService,
         ILogger<GetDashboardHandler> logger)
     {
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
+        _savingRepository = savingRepository;
         _currentUserService = currentUserService;
         _logger = logger;
     }
@@ -54,18 +58,20 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
             5,
             cancellationToken);
 
-        // 3. Get calendar view: daily activity for the month
-        var calendarView = await GetCalendarViewAsync(
+        // 3. Get monthly stats: counts and transactions for savings
+        var (calendarView, monthTransactions) = await GetMonthlyStatsAsync(
             userId,
             yearMonth,
-            year,
-            month,
             cancellationToken);
+
+        // 4. Get savings
+        var savings = await GetSavingsAsync(userId, monthTransactions, cancellationToken);
 
         return new GetDashboardQueryResult(
             balance,
             recentTransactions,
-            calendarView);
+            calendarView,
+            savings);
     }
 
     private async Task<DashboardBalance> GetBalanceAsync(string userId, CancellationToken cancellationToken)
@@ -78,11 +84,9 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
         return new DashboardBalance(totalBalance, accountCount);
     }
 
-    private async Task<CalendarView> GetCalendarViewAsync(
+    private async Task<(CalendarView, List<BudgetManager.Api.Domain.Entities.Transaction>)> GetMonthlyStatsAsync(
         string userId,
         string yearMonth,
-        int year,
-        int month,
         CancellationToken cancellationToken)
     {
         // Get all transactions for the month
@@ -91,53 +95,43 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, GetDashboa
             yearMonth,
             cancellationToken: cancellationToken);
 
-        // Get number of days in the month
-        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var transfersCount = transactions.Count(t => t.TransactionType == TransactionType.Transfer);
+        var expensesCount = transactions.Count(t => t.TransactionType == TransactionType.Expense);
+        var incomesCount = transactions.Count(t => t.TransactionType == TransactionType.Income);
 
-        // Group transactions by day
-        var transactionsByDay = transactions
-            .GroupBy(t => t.Day)
-            .ToDictionary(g => g.Key, g => g.ToList());
+        return (new CalendarView(yearMonth, transfersCount, expensesCount, incomesCount), transactions);
+    }
 
-        // Build day summaries for each day of the month
-        var daySummaries = new List<DayActivitySummary>();
+    private async Task<List<BudgetSectionItemDto>> GetSavingsAsync(
+        string userId,
+        List<BudgetManager.Api.Domain.Entities.Transaction> transactions,
+        CancellationToken cancellationToken)
+    {
+        var savings = await _savingRepository.GetByUserIdAsync(userId, cancellationToken);
 
-        for (int day = 1; day <= daysInMonth; day++)
+        return savings.Select(s =>
         {
-            var dayTransactions = transactionsByDay.GetValueOrDefault(day) ?? new List<BudgetManager.Api.Domain.Entities.Transaction>();
+            var linkedTransaction = transactions.FirstOrDefault(t => t.SavingKey == s.Id);
+            var isApplied = linkedTransaction != null;
+            var amount = isApplied ? linkedTransaction!.Amount : s.AmountPerMonth;
 
-            var expenses = dayTransactions.Where(t =>
-                t.TransactionType == TransactionType.Expense && t.IsApplied).ToList();
-
-            var notAppliedExpenses = dayTransactions.Where(t =>
-                t.TransactionType == TransactionType.Expense && !t.IsApplied).ToList();
-
-            var incomes = dayTransactions.Where(t =>
-                t.TransactionType == TransactionType.Income && t.IsApplied).ToList();
-
-            var notAppliedIncomes = dayTransactions.Where(t =>
-                t.TransactionType == TransactionType.Income && !t.IsApplied).ToList();
-
-            var transfers = dayTransactions.Where(t =>
-                t.TransactionType == TransactionType.Transfer).ToList();
-
-            var dayActivity = new DayActivitySummary(
-                Date: new DateTime(year, month, day),
-                HasExpenses: expenses.Any(),
-                HasNotAppliedExpenses: notAppliedExpenses.Any(),
-                HasIncome: incomes.Any(),
-                HasNotAppliedIncome: notAppliedIncomes.Any(),
-                HasTransfers: transfers.Any(),
-                ExpenseCount: expenses.Count,
-                NotAppliedExpenseCount: notAppliedExpenses.Count,
-                IncomeCount: incomes.Count,
-                NotAppliedIncomeCount: notAppliedIncomes.Count,
-                TransferCount: transfers.Count
-            );
-
-            daySummaries.Add(dayActivity);
-        }
-
-        return new CalendarView(yearMonth, daySummaries);
+            return new BudgetSectionItemDto
+            {
+                Id = s.Id,
+                UserId = s.UserId,
+                Amount = amount,
+                IsApplied = isApplied,
+                TransactionId = linkedTransaction?.Id,
+                Name = s.Name,
+                Icon = s.Icon,
+                Color = s.Color,
+                GoalAmount = s.GoalAmount,
+                SavedAmount = s.SavedAmount,
+                AmountPerMonth = s.AmountPerMonth,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                Type = "saving"
+            };
+        }).ToList();
     }
 }

@@ -1,4 +1,5 @@
 using BudgetManager.Api.Domain.Entities;
+using BudgetManager.Service.Api.Features.Budget.DTOs;
 using MediatR;
 
 namespace BudgetManager.Service.Features.Dashboard.Queries;
@@ -12,7 +13,8 @@ public record GetDashboardQuery : IRequest<GetDashboardQueryResult>
 public record GetDashboardQueryResult(
     DashboardBalance Balance,
     List<Transaction> RecentTransactions,
-    CalendarView CalendarView
+    CalendarView CalendarView,
+    List<BudgetSectionItemDto> Savings
 );
 
 public record DashboardBalance(
@@ -22,19 +24,8 @@ public record DashboardBalance(
 
 public record CalendarView(
     string YearMonth,
-    List<DayActivitySummary> Days
+    int TransfersCount,
+    int ExpensesCount,
+    int IncomesCount
 );
 
-public record DayActivitySummary(
-    DateTime Date,
-    bool HasExpenses,
-    bool HasNotAppliedExpenses,
-    bool HasIncome,
-    bool HasNotAppliedIncome,
-    bool HasTransfers,
-    int ExpenseCount,
-    int NotAppliedExpenseCount,
-    int IncomeCount,
-    int NotAppliedIncomeCount,
-    int TransferCount
-);
