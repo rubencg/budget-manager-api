@@ -46,8 +46,8 @@ jobs:
           registryUsername: ${{ secrets.DOCKER_USERNAME }}
           registryPassword: ${{ secrets.DOCKER_PASSWORD }}
           environmentVariables: |
-            Auth0__Domain=${{ secrets.AUTH0_DOMAIN }}
-            Auth0__Audience=${{ secrets.AUTH0_AUDIENCE }}
+            AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
+            AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
             CosmosDb__ConnectionString=${{ secrets.COSMOS_CONNECTION_STRING }}
             CosmosDb__DatabaseName=BudgetManager
             CosmosDb__TransactionsContainer=Transactions
