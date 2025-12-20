@@ -45,3 +45,14 @@ jobs:
           registryUrl: docker.io
           registryUsername: ${{ secrets.DOCKER_USERNAME }}
           registryPassword: ${{ secrets.DOCKER_PASSWORD }}
+          environmentVariables: |
+            Auth0__Domain=${{ secrets.AUTH0_DOMAIN }}
+            Auth0__Audience=${{ secrets.AUTH0_AUDIENCE }}
+            CosmosDb__ConnectionString=${{ secrets.COSMOS_CONNECTION_STRING }}
+            CosmosDb__DatabaseName=BudgetManager
+            CosmosDb__TransactionsContainer=Transactions
+            CosmosDb__AccountsContainer=Accounts
+            CosmosDb__CategoriesContainer=Categories
+            CosmosDb__PlannedItemsContainer=PlannedItems
+            CosmosDb__MonthlyTransactionsContainer=MonthlyTransactions
+            CosmosDb__UsersContainer=Users
