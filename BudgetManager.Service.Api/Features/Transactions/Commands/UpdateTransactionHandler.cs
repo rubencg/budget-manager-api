@@ -62,9 +62,8 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
         {
             if (oldTransaction.TransactionType == TransactionType.Transfer)
             {
-                // For transfers, validate both old FromAccount and ToAccount still exist
                 await _transactionValidationService.ValidateAccountExistsForReversalAsync(
-                    oldTransaction.FromAccountId!,
+                    oldTransaction.FromAccountId ?? oldTransaction.AccountId,
                     userId,
                     cancellationToken);
 
@@ -88,11 +87,11 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
         {
             // For transfers, validate both FromAccountId and ToAccountId
             _transactionValidationService.ValidateTransferRules(
-                request.FromAccountId,
+                request.FromAccountId ?? request.AccountId,
                 request.ToAccountId);
 
             await _transactionValidationService.ValidateTransferAccountsAsync(
-                request.FromAccountId!,
+                request.FromAccountId ?? request.AccountId!,
                 request.ToAccountId!,
                 userId,
                 cancellationToken);
@@ -123,10 +122,10 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
 
             // For TRANSFERS ONLY, also set FromAccountId/ToAccountId
             FromAccountId = request.TransactionType == TransactionType.Transfer
-                ? request.FromAccountId
+                ? (request.FromAccountId ?? request.AccountId)
                 : null,
             FromAccountName = request.TransactionType == TransactionType.Transfer
-                ? request.FromAccountName
+                ? (request.FromAccountName ?? request.AccountName)
                 : null,
             ToAccountId = request.TransactionType == TransactionType.Transfer
                 ? request.ToAccountId
