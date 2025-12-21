@@ -51,13 +51,15 @@ public class AccountBalanceService : IAccountBalanceService
                 break;
 
             case TransactionType.Transfer:
-                if (string.IsNullOrEmpty(transaction.FromAccountId))
+                var fromAccountId = string.IsNullOrEmpty(transaction.FromAccountId) ? transaction.AccountId : transaction.FromAccountId;
+
+                if (string.IsNullOrEmpty(fromAccountId))
                 {
                     _logger.LogError(
-                        "Transfer transaction {TransactionId} is missing FromAccountId",
+                        "Transfer transaction {TransactionId} is missing source account information",
                         transaction.Id);
                     throw new InvalidOperationException(
-                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId)");
+                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId or AccountId)");
                 }
 
                 if (string.IsNullOrEmpty(transaction.ToAccountId))
@@ -71,7 +73,7 @@ public class AccountBalanceService : IAccountBalanceService
 
                 // Deduct from source account
                 await DeductFromAccountAsync(
-                    transaction.FromAccountId,
+                    fromAccountId,
                     transaction.Amount,
                     userId,
                     transaction.TransactionType,
@@ -134,13 +136,15 @@ public class AccountBalanceService : IAccountBalanceService
                 break;
 
             case TransactionType.Transfer:
-                if (string.IsNullOrEmpty(transaction.FromAccountId))
+                var revFromAccountId = string.IsNullOrEmpty(transaction.FromAccountId) ? transaction.AccountId : transaction.FromAccountId;
+
+                if (string.IsNullOrEmpty(revFromAccountId))
                 {
                     _logger.LogError(
-                        "Transfer transaction {TransactionId} is missing FromAccountId",
+                        "Transfer transaction {TransactionId} is missing source account information",
                         transaction.Id);
                     throw new InvalidOperationException(
-                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId)");
+                        $"Transfer transaction {transaction.Id} must have a source account (FromAccountId or AccountId)");
                 }
 
                 if (string.IsNullOrEmpty(transaction.ToAccountId))
@@ -154,7 +158,7 @@ public class AccountBalanceService : IAccountBalanceService
 
                 // Reverse transfer: add back to source account
                 await AddToAccountAsync(
-                    transaction.FromAccountId,
+                    revFromAccountId,
                     transaction.Amount,
                     userId,
                     transaction.TransactionType,

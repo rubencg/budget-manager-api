@@ -43,11 +43,11 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
         {
             // For transfers, validate both FromAccountId and ToAccountId
             _transactionValidationService.ValidateTransferRules(
-                request.FromAccountId,
+                request.FromAccountId ?? request.AccountId,
                 request.ToAccountId);
 
             await _transactionValidationService.ValidateTransferAccountsAsync(
-                request.FromAccountId!,
+                request.FromAccountId ?? request.AccountId!,
                 request.ToAccountId!,
                 userId,
                 cancellationToken);
@@ -82,10 +82,10 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
 
             // For TRANSFERS ONLY, also set FromAccountId/ToAccountId
             FromAccountId = request.TransactionType == TransactionType.Transfer
-                ? request.FromAccountId
+                ? (request.FromAccountId ?? request.AccountId)
                 : null,
             FromAccountName = request.TransactionType == TransactionType.Transfer
-                ? request.FromAccountName
+                ? (request.FromAccountName ?? request.AccountName)
                 : null,
             ToAccountId = request.TransactionType == TransactionType.Transfer
                 ? request.ToAccountId
