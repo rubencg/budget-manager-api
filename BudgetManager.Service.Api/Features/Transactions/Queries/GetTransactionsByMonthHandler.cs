@@ -41,6 +41,28 @@ public class GetTransactionsByMonthQueryHandler
             categoryId: request.CategoryId,
             cancellationToken: cancellationToken);
 
+        if (!string.IsNullOrWhiteSpace(request.SearchText))
+        {
+            var lowerCaseSearchTerm = request.SearchText.ToLowerInvariant();
+            transactions = transactions.Where(t =>
+            {
+                var searchFields = new[]
+                {
+                    t.Amount.ToString(),
+                    t.ToAccountName,
+                    t.FromAccountName,
+                    t.AccountName,
+                    t.CategoryName,
+                    t.Subcategory,
+                    t.Notes
+                };
+
+                return searchFields.Any(field =>
+                    !string.IsNullOrWhiteSpace(field) &&
+                    field.ToLowerInvariant().Contains(lowerCaseSearchTerm));
+            }).ToList();
+        }
+
         // Define allowed sort fields
         var sortFieldMap = new Dictionary<string, Func<Transaction, object>>
         {

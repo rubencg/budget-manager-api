@@ -11,6 +11,7 @@ public record GetTransactionsByMonthQuery : IRequest<PagedResult<Transaction>>
     public int Month { get; init; }
     public TransactionType? TransactionType { get; init; }
     public string? CategoryId { get; init; }
+    public string? SearchText { get; init; }
     public PaginationParams Pagination { get; init; } = new();
     public SortParams Sort { get; init; } = new();
 }

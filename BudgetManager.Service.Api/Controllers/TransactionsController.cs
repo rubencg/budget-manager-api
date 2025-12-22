@@ -56,6 +56,7 @@ public class TransactionsController : ControllerBase
         int month,
         [FromQuery] TransactionType? type = null,
         [FromQuery] string? categoryId = null,
+        [FromQuery] string? searchText = null,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string sortBy = "date",
@@ -68,6 +69,7 @@ public class TransactionsController : ControllerBase
             Month = month,
             TransactionType = type,
             CategoryId = categoryId,
+            SearchText = searchText,
             Pagination = new PaginationParams
             {
                 PageNumber = pageNumber,
