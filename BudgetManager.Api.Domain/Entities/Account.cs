@@ -42,4 +42,10 @@ public class Account : ICosmosEntity
 
     [JsonProperty("sumsToMonthlyBudget")]
     public bool SumsToMonthlyBudget { get; set; }
+
+    [JsonProperty("availableCredit")]
+    public decimal? AvailableCredit { get; set; }
+
+    [JsonProperty("remainingCredit")]
+    public decimal? RemainingCredit => AvailableCredit.HasValue ? (AvailableCredit.Value + CurrentBalance) : null;
 }

@@ -12,4 +12,5 @@ public record CreateAccountCommand : IRequest<Account>
     public string? Color { get; init; }
     public string? Image { get; init; }
     public bool IsArchived { get; init; } = false;
+    public decimal? AvailableCredit { get; init; }
 }

@@ -48,6 +48,7 @@ public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, Accoun
         existingAccount.Color = request.Color;
         existingAccount.IsArchived = request.IsArchived;
         existingAccount.Image = request.Image;
+        existingAccount.AvailableCredit = request.AvailableCredit;
 
         return await _accountRepository.UpdateAsync(existingAccount, cancellationToken);
     }

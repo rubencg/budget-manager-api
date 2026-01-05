@@ -39,7 +39,8 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Accoun
             AccountType = request.AccountType,
             Color = request.Color,
             Image = request.Image,
-            IsArchived = request.IsArchived
+            IsArchived = request.IsArchived,
+            AvailableCredit = request.AvailableCredit
         };
 
         return await _accountRepository.CreateAsync(account, cancellationToken);
