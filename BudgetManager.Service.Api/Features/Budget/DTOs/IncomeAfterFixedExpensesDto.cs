@@ -20,6 +20,9 @@ public class IncomesAfterMonthlyExpensesData
     [JsonProperty("monthlyExpenses")]
     public BudgetSectionDto MonthlyExpenses { get; set; } = new();
 
+    [JsonProperty("incomes")]
+    public BudgetSectionDto Incomes { get; set; } = new();
+
     [JsonProperty("savings")]
     public BudgetSectionDto Savings { get; set; } = new();
 }

@@ -142,12 +142,42 @@ public class GetIncomeAfterFixedExpensesHandler : IRequestHandler<GetIncomeAfter
         dto.IncomesAfterMonthlyExpenses.Savings.Items = savingItems;
         dto.IncomesAfterMonthlyExpenses.Savings.Total = savingItems.Sum(x => x.Amount);
 
+        // 5. Process Actual Incomes (Transactions) - Filter out those already linked to monthly incomes
+        var actualIncomes = transactions
+            .Where(t => t.TransactionType == TransactionType.Income && string.IsNullOrEmpty(t.MonthlyKey))
+            .Select(t => new BudgetSectionItemDto
+            {
+                Id = t.Id,
+                UserId = t.UserId,
+                Amount = t.Amount,
+                IsApplied = t.IsApplied,
+                TransactionId = t.Id,
+                Notes = t.Notes,
+                DayOfMonth = t.Date.Day,
+                Name = t.Notes,
+                AccountId = t.AccountId,
+                AccountName = t.AccountName,
+                CategoryId = t.CategoryId,
+                CategoryName = t.CategoryName,
+                Subcategory = t.Subcategory,
+                Icon = t.CategoryImage,
+                Color = t.CategoryColor,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt,
+                Type = "transaction"
+            })
+            .ToList();
+
+        dto.IncomesAfterMonthlyExpenses.Incomes.Items = actualIncomes;
+        dto.IncomesAfterMonthlyExpenses.Incomes.Total = actualIncomes.Sum(x => x.Amount);
+
         // Calculate grand total (optional, depending on requirements, usually incomes - expenses - savings)
         // The requested JSON structure has a top level "total" which usually represents the "Income After Fixed Expenses"
         // Formula: Total Monthly Incomes - Total Monthly Expenses - Total Savings
         
         dto.IncomesAfterMonthlyExpenses.Total = 
-            dto.IncomesAfterMonthlyExpenses.MonthlyIncomes.Total - 
+            monthlyIncomes.Sum(x => x.Amount) + 
+            dto.IncomesAfterMonthlyExpenses.Incomes.Total - 
             dto.IncomesAfterMonthlyExpenses.MonthlyExpenses.Total - 
             dto.IncomesAfterMonthlyExpenses.Savings.Total;
 
